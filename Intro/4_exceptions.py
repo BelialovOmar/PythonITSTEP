@@ -1,43 +1,47 @@
-# Python exceptions
+# Виняткові ситуації, Exceptions
 
-def throw() -> None:
-    print("Raising error")
+def throw() -> None :
+    print( "Raising error" )
     raise TypeError
 
-def throw_msg() -> None:
-    print("Raising error")
-    raise ValueError("Value error")
 
-def no_throw() -> None:
-    pass
+def throw_msg() -> None :
+    print( "Raising message error" )
+    raise ValueError( "The error message" )
 
 
-def main() -> None:
-    try:
+def no_throw() -> None :
+    pass               # у Python немає поняття порожнього блоку, типу {}
+                       # якщо у блоці немає операцій, то використовується 
+                       # "заглушка" pass (NOP)
+
+def main() -> None :
+    try :
         throw()
-    except TypeError:
-        print("Caught error")
-    
-    try:
-        throw_msg()
-    except ValueError as e:
-        print("Caught error: ", e.args[0])
-    except TypeError:
-        print("Caught error type error")
     except :
-        print("Unknown error")
-    finally:
-        print("Finally block")
+        print( "Error detected" )
 
-    try:
+    try :
+        throw_msg()
+    except TypeError :
+        print( "TypeError detected" )
+    except ValueError as err :
+        print( "ValueError detected: ", err )
+    except :
+        print( "Unknown error detected" )
+    finally :
+        print( "Finally action" )
+
+    try :
         no_throw()
     except :
-        print("Caught error")
-    else:
-        print("No error")
-    finally:
-        print("Finally block")
+        print( "Unknown error detected" )
+    else :                         # продовження у разі відсутності 
+        print( "Else action" )     # винятків але не після return
+    finally :                      # виконається завжди, навіть якщо у 
+        print( "Finally action" )  # блоках буде return
 
 
-        
-if __name__ == "__main__": main()
+
+if __name__ == "__main__" :
+    main()
