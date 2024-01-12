@@ -1,8 +1,8 @@
-def input_positive_number(prompt):
+def input_positive_number(value1):
     # Функція для введення позитивного числа.
     while True:
         try:
-            number = float(input(prompt))
+            number = float(input(value1))
             if number > 0:
                 return number
             else:
