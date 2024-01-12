@@ -23,6 +23,7 @@ parsed_query = parse_query_string(query_string)
 
 print("Content-Type: text/html; charset=utf-8")
 print()
+
 print("<html><body>")
 print("<h2>Змінні оточення:</h2>")
 for var, value in env_values.items():
@@ -34,3 +35,4 @@ for key, value in parsed_query.items():
     print(f"<li>{html.escape(key)}: {html.escape(value)}</li>")
 print("</ul>")
 print("</body></html>")
+
