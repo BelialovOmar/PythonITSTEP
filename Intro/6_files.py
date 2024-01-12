@@ -87,10 +87,10 @@ def parse_headers( filename:str ) -> dict | None :
 
 
 def main() -> None :
-    # create_file1()
-    # print( read_all_text1( "file1.txt" ) )
-    # create_headers( "headers.txt" )
-    # print_headers( "headers.txt" )
+    create_file1()
+    print( read_all_text1( "file1.txt" ) )
+    create_headers ( "headers.txt" )
+    print_headers  ( "headers.txt" )
     for k, v in parse_headers( "headers.txt" ).items() :
         print( k, v )
 
