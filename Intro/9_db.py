@@ -12,7 +12,7 @@
 #     пошкодження "не своїх" БД, а також спрощує розуміння які БД
 #     належать до яких проєктів.
 #  - БД 
-#     через терминал  cd /xampp, потом cd mysql/bin
+#     через терминал  cd /xampp/mysql/bin
 #     CREATE DATABASE py202 ;
 #  - Користувач
 #     CREATE USER py202_user@localhost IDENTIFIED BY 'pass_202' ;
@@ -27,11 +27,11 @@
 #   середовище виконання). Встановлюємо командою (у терміналі)
 #   pip install mysql-connector-python
 #  Перевіряємо імпортом
+
 import mysql.connector
 import hashlib
 
-def main() -> None:
-    db_ini = {
+db_ini = {
         'host': 'localhost',
         'port': 3306,
         'user': 'py202_user',
@@ -41,23 +41,72 @@ def main() -> None:
         'use_unicode': True,
         'collation': 'utf8mb4_unicode_ci'
     }
-    db_connection = None
+db_connection = None
 
-    try:
-        db_connection = mysql.connector.connect(**db_ini)
-        print("Connection OK")
-        
-        sql = "SHOW DATABASES"
-        with db_connection.cursor() as cursor:
-            cursor.execute(sql)
-            print(cursor.column_names)
-            for row in cursor:
-                print(row)
-    except mysql.connector.Error as err:
-        print(err)
-    finally:
-        if db_connection:
-            db_connection.close()
+def connect_db() :
+    global db_connection
+    try :
+        db_connection = mysql.connector.connect( **db_ini )
+    except mysql.connector.Error as err :
+        print( err )
+        return
+    else :
+        print( "Connection OK" )
+
+def show_databases() :
+    global db_connection
+    sql = "SHOW DATABASES"
+    try :
+        with db_connection.cursor() as cursor :
+            cursor.execute( sql )
+            print( cursor.column_names )
+            for row in cursor :
+                print( row )
+    except mysql.connector.Error as err :
+        print( err )
+        return 
+    
+def create_users() :
+    global db_connection
+    sql = """CREATE TABLE users (
+    `id`       BIGINT UNSIGNED  PRIMARY KEY  DEFAULT (UUID_SHORT()),
+    `login`    VARCHAR(32)   NOT NULL  UNIQUE,
+    `password` CHAR(32)      NOT NULL,
+    `avatar`   VARCHAR(256)  NULL
+    ) ENGINE = InnoDB, DEFAULT CHARSET = utf8mb4 COLLATE utf8mb4_unicode_ci """
+    try :
+        with db_connection.cursor() as cursor :
+            cursor.execute( sql )
+    except mysql.connector.Error as err :
+        print( err )
+    else :
+        print( 'CREATE TABLE users -- OK' )
+
+def add_user( login:str, password:str, avatar:str=None ) :
+    sql = "INSERT INTO users (`login`, `password`, `avatar`) VALUES ( %s, %s, %s )"
+    password = hashlib.md5( password.encode() ).hexdigest()
+    try :
+        with db_connection.cursor() as cursor :
+            cursor.execute( sql, ( login, password, avatar ) )
+        db_connection.commit()   # завершити транзакцію
+    except mysql.connector.Error as err :
+        print( err )
+    else :
+        print( 'INSERT INTO users -- OK' )
+
+
+def main() -> None:
+    global db_connection
+    connect_db()
+    # create_users()
+
+    user = {
+        "login": "user",
+        "password": "123",
+        "avatar": "user1.png"
+    }
+    # add_user( **user )
+
 
 if __name__ == "__main__":
     main()
