@@ -4,35 +4,45 @@ import os
 import cgi
 import html
 import cgitb; cgitb.enable()
+import mysql.connector
 
-def parse_query_string(query):
-    params = {}
-    if query:
-        pairs = query.split('&')
-        for pair in pairs:
-            key, value = pair.split('=')
-            params[key] = value
-    return params
+# Функція для підключення до бази даних і виконання запиту
+def fetch_databases():
+    db_ini = {
+        'host': 'localhost',
+        'port': 3306,
+        'user': 'py202_user',
+        'password': 'pass_202',
+        'database': 'py202',
+        'charset': 'utf8mb4',
+        'use_unicode': True,
+        'collation': 'utf8mb4_unicode_ci'
+    }
+    db_connection = mysql.connector.connect(**db_ini)
+    cursor = db_connection.cursor()
+    cursor.execute("SHOW DATABASES")
+    databases = cursor.fetchall()
+    cursor.close()
+    db_connection.close()
+    return databases
 
+# Генерація HTML-таблиці з результатами
+def generate_html_table(data):
+    html_content = "<table border='1'><tr><th>Database Name</th></tr>"
+    for row in data:
+        html_content += f"<tr><td>{html.escape(row[0])}</td></tr>"
+    html_content += "</table>"
+    return html_content
 
-env_vars = ['REQUEST_URI', 'QUERY_STRING', 'REQUEST_METHOD', 'REMOTE_ADDR', 'REQUEST_SCHEME']
-env_values = {var: os.environ.get(var, '') for var in env_vars}
-
-query_string = os.environ.get('QUERY_STRING', '')
-parsed_query = parse_query_string(query_string)
-
+# Основний код
 print("Content-Type: text/html; charset=utf-8")
 print()
 
 print("<html><body>")
-print("<h2>Змінні оточення:</h2>")
-for var, value in env_values.items():
-    print(f"<p>{var}: {html.escape(value)}</p>")
+print("<h1>Список баз даних</h1>")
 
-print("<h2>Розібраний QUERY_STRING:</h2>")
-print("<ul>")
-for key, value in parsed_query.items():
-    print(f"<li>{html.escape(key)}: {html.escape(value)}</li>")
-print("</ul>")
+# Викликаємо функцію fetch_databases і виводимо результат у таблиці
+databases = fetch_databases()
+print(generate_html_table(databases))
+
 print("</body></html>")
-
