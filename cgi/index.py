@@ -1,4 +1,3 @@
-# #!C:\Users\Admin\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
 
 # import os
 # import cgi
@@ -67,14 +66,77 @@
 
 # print("</body></html>")
 
-#!C:\Users\Admin\AppData\Local\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.11_qbz5n2kfra8p0\python.exe
+#!C:\Program Files\Python312\python.exe
 
 import os
+import mysql.connector
+current_dir = os.path.dirname(os.path.abspath(__file__))
+os.chdir(current_dir)
+
+
+db_ini = {
+    'host': 'localhost',
+    'port': 3307,
+    'user': 'py202_user',
+    'password': 'pass_202',
+    'database': 'py202',
+    'charset': 'utf8mb4',
+    'use_unicode': True,
+    'collation': 'utf8mb4_unicode_ci'
+}
+
+def connect_db():
+    try:
+        return mysql.connector.connect(**db_ini)
+    except mysql.connector.Error as err:
+        return None
+
 
 envs = f"<ul>{''.join([f'<li>{k} = {v}</li>' for k, v in os.environ.items()])}</ul>"
+
 
 print("Content-Type: text/html; charset=cp1251")
 print("Connection: close")
 print()   # порожній рядок - кінець заголовків
-with open( 'home.html' ) as file :
-    print( file.read() )
+with open('home.html', encoding='utf-8') as file:
+    print(file.read())
+
+
+def main():
+    db_connection = connect_db()
+    databases = []  
+
+    if db_connection:
+        try:
+            cursor = db_connection.cursor()
+            cursor.execute("SHOW DATABASES")
+            databases = cursor.fetchall()  
+        except mysql.connector.Error as err:
+            print(f"Ошибка при выполнении запроса: {err}")
+        finally:
+            db_connection.close()
+
+    html_table = generate_html_table(databases)  
+
+    with open('home.html', encoding='utf-8') as file:
+        html_content = file.read()
+
+    html_content = html_content.replace('<!--DB_TABLE-->', html_table)
+
+    print("Content-Type: text/html; charset=cp1251")
+    print("Connection: close")
+    print()
+    print(html_content)
+
+
+
+def generate_html_table(data):
+    html_table = "<table><tr><th>Database Name</th></tr>"
+    for row in data:
+        html_table += f"<tr><td>{row[0]}</td></tr>"
+    html_table += "</table>"
+    return html_table
+
+if __name__ == "__main__":
+    main()
+

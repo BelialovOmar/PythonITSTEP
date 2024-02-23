@@ -1,22 +1,21 @@
 # Основи ООП
 
-class Point :                  # Оголошення класу
-    x = 0                      # поля, описані у класі є відкритими
-    y = 0                      # та ! статичними.
-                               # 
-                               # 
-def demo1() -> None :          # 
-    p1 = Point()               # Особливість: оператор new не
-    p2 = Point()               # зазначається, тільки назва класу
-    print(p1.x, p2.x, Point.x) # 0 0 0
-    Point.x = 10               # На даному етапі р1 не має поля "х", тому береться більш "глобальне" - поле класу
-    print(p1.x, p2.x, Point.x) # 10 10 10
-    p1.x = 20                  # Створення об'єктного (локального) поля "х", яке приховує класове (статичне)
-    print(p1.x, p2.x, Point.x) # 20 10 10
-    Point.x = 30               #
-    print(p1.x, p2.x, Point.x) # 20 30 30
-    del p1.x                   # Видаляємо об'єктне поле, але статичне (класове) залишається
-    print(p1.x, p2.x, Point.x) # 30 30 30
+class Point :                 
+    x = 0                    
+    y = 0                     
+    
+def demo1() -> None :          
+    p1 = Point()               
+    p2 = Point()               
+    print(p1.x, p2.x, Point.x)
+    Point.x = 10               
+    print(p1.x, p2.x, Point.x) 
+    p1.x = 20                  
+    print(p1.x, p2.x, Point.x) 
+    Point.x = 30               
+    print(p1.x, p2.x, Point.x)  
+    del p1.x                   
+    print(p1.x, p2.x, Point.x) 
 
 
 class Vector :                   # Для того щоб створити об'єктні поля необхідний
